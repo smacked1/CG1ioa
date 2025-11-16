@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'views/home_page.dart';
 import 'views/chef_page.dart';
 import 'views/shop_page.dart';
 import 'views/plan_page.dart';
 import 'views/budget_page.dart';
 import 'views/calc_page.dart';
+import 'views/onboarding_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const ChefGrocerApp());
 }
 
@@ -57,7 +60,90 @@ class ChefGrocerApp extends StatelessWidget {
         ),
       ),
       themeMode: ThemeMode.system,
-      home: const MainNavigation(),
+      home: const SplashLoader(),
+    );
+  }
+}
+
+class SplashLoader extends StatefulWidget {
+  const SplashLoader({super.key});
+
+  @override
+  State<SplashLoader> createState() => _SplashLoaderState();
+}
+
+class _SplashLoaderState extends State<SplashLoader> {
+  @override
+  void initState() {
+    super.initState();
+    _checkOnboardingStatus();
+  }
+
+  Future<void> _checkOnboardingStatus() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    final prefs = await SharedPreferences.getInstance();
+    final hasCompletedOnboarding = prefs.getBool('onboarding_complete') ?? false;
+
+    if (mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => hasCompletedOnboarding
+              ? const MainNavigation()
+              : const OnboardingScreen(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 20,
+                    spreadRadius: 5,
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.shopping_cart,
+                size: 60,
+                color: Colors.green,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'ChefGrocer',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Plan. Shop. Save.',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white70,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
