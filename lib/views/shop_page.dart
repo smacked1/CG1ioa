@@ -56,11 +56,34 @@ class _ShopPageState extends State<ShopPage> {
     final updated = item.copyWith(starred: !item.starred);
     await _store.update(updated);
     setState(() {});
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            updated.starred 
+              ? '⭐ ${item.name} starred!' 
+              : '${item.name} unstarred',
+          ),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    }
   }
 
   Future<void> _deleteItem(GroceryItem item) async {
+    final itemName = item.name;
     await _store.delete(item.id);
     setState(() {});
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('🗑️ $itemName deleted'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   void _navigateToDetail(GroceryItem item) async {
@@ -85,6 +108,18 @@ class _ShopPageState extends State<ShopPage> {
 
   Future<void> _exportData() async {
     final items = _store.items;
+    if (items.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No items to export'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+      return;
+    }
+    
     final jsonData = items.map((item) => item.toJson()).toList();
     final jsonString = const JsonEncoder.withIndent('  ').convert(jsonData);
     
@@ -92,6 +127,15 @@ class _ShopPageState extends State<ShopPage> {
       jsonString,
       subject: 'ChefGrocer Shopping List Export',
     );
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('📤 ${items.length} items exported'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   @override

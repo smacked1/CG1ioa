@@ -89,6 +89,23 @@ class _CalcPageState extends State<CalcPage> with SingleTickerProviderStateMixin
       });
 
       _budgetStore.addCalculation(calc);
+      
+      // Show feedback
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(calc.savings > 0 
+            ? '✅ Calculated! Bulk saves ${calc.savingsPercentage.toStringAsFixed(1)}%'
+            : '✅ Calculated! Single purchase is cheaper'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('⚠️ Please fill in all fields'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -101,6 +118,13 @@ class _CalcPageState extends State<CalcPage> with SingleTickerProviderStateMixin
       _singleQuantityController.clear();
       _currentComparison = null;
     });
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('🧹 Calculation cleared'),
+        duration: Duration(seconds: 1),
+      ),
+    );
   }
 
   void _addIngredient() {
@@ -110,12 +134,26 @@ class _CalcPageState extends State<CalcPage> with SingleTickerProviderStateMixin
         'quantity': 1.0,
       });
     });
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('➕ Ingredient added'),
+        duration: Duration(seconds: 1),
+      ),
+    );
   }
 
   void _removeIngredient(int index) {
     setState(() {
       _ingredients.removeAt(index);
     });
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('➖ Ingredient removed'),
+        duration: Duration(seconds: 1),
+      ),
+    );
   }
 
   double _getScaledQuantity(double originalQty) {

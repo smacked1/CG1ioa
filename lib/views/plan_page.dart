@@ -42,6 +42,12 @@ class _PlanPageState extends State<PlanPage> {
   }
 
   void _showAddMealDialog(String day) {
+    if (_mealStore.meals.isEmpty) {
+      // No meals available, add a placeholder
+      _addPlaceholderMeal(day);
+      return;
+    }
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -62,6 +68,12 @@ class _PlanPageState extends State<PlanPage> {
                   if (mounted) {
                     Navigator.pop(context);
                     _loadData();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('✅ ${meal.name} added to $day'),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
                   }
                 },
               );
@@ -76,6 +88,33 @@ class _PlanPageState extends State<PlanPage> {
         ],
       ),
     );
+  }
+  
+  Future<void> _addPlaceholderMeal(String day) async {
+    // Create a placeholder meal
+    final placeholderMeal = Meal.create(
+      name: 'Sample Meal',
+      description: 'A placeholder meal for $day',
+      servings: 4,
+      notes: 'Created as placeholder. Edit in Chef page.',
+    );
+    
+    await _mealStore.add(placeholderMeal);
+    await _planStore.addMealToDay(day, placeholderMeal.id);
+    _loadData();
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('📝 Placeholder meal added to $day. Edit in Chef page.'),
+          duration: const Duration(seconds: 3),
+          action: SnackBarAction(
+            label: 'OK',
+            onPressed: () {},
+          ),
+        ),
+      );
+    }
   }
 
   @override

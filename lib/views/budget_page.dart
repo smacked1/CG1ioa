@@ -60,6 +60,12 @@ class _BudgetPageState extends State<BudgetPage> {
                 if (mounted) {
                   Navigator.pop(context);
                   _loadData();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('💰 Cost for ${item.name} updated to \$${cost.toStringAsFixed(2)}'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
                 }
               }
             },
@@ -106,6 +112,15 @@ class _BudgetPageState extends State<BudgetPage> {
     buffer.writeln('\nTotal: \$${_getTotalCost().toStringAsFixed(2)}');
     
     await Share.share(buffer.toString(), subject: 'ChefGrocer Budget Summary');
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('📊 Budget summary exported successfully'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   @override

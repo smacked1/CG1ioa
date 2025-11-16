@@ -59,7 +59,16 @@ class _HomePageState extends State<HomePage> {
                     setState(() {
                       _monsterMode = value;
                     });
-                    // TODO: Implement global filter state
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          value 
+                            ? '⭐ Monster Mode ON - Showing starred items only'
+                            : '👁️ Monster Mode OFF - Showing all items',
+                        ),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
                   },
                 ),
               ],

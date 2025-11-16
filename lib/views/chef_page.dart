@@ -85,6 +85,12 @@ class _ChefPageState extends State<ChefPage> {
                 if (mounted) {
                   Navigator.pop(context);
                   _loadData();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('✅ ${meal.name} added to meal planner'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
                 }
               }
             },
@@ -153,6 +159,12 @@ class _ChefPageState extends State<ChefPage> {
                 if (mounted) {
                   Navigator.pop(context);
                   _loadData();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('✏️ ${updatedMeal.name} updated'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
                 }
               }
             },
@@ -164,16 +176,38 @@ class _ChefPageState extends State<ChefPage> {
   }
 
   Future<void> _addIngredientsToShop(Meal meal) async {
+    // Since ingredients list may be empty in this simplified implementation,
+    // we'll provide feedback about the action
+    if (meal.ingredients.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('🛒 "${meal.name}" has no ingredients defined yet'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+      return;
+    }
+    
     // Add all meal ingredients to shopping list
+    int addedCount = 0;
     for (final ingredientId in meal.ingredients) {
       final item = _itemStore.getById(ingredientId);
       if (item != null && !_itemStore.items.contains(item)) {
         await _itemStore.add(item);
+        addedCount++;
       }
     }
+    
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${meal.ingredients.length} items added to shop')),
+        SnackBar(
+          content: Text(addedCount > 0 
+            ? '🛒 $addedCount items from "${meal.name}" added to shop'
+            : '✓ All items from "${meal.name}" already in shop'),
+          duration: const Duration(seconds: 2),
+        ),
       );
     }
   }
@@ -290,8 +324,17 @@ class _ChefPageState extends State<ChefPage> {
                               IconButton(
                                 icon: const Icon(Icons.delete, size: 20),
                                 onPressed: () async {
+                                  final mealName = meal.name;
                                   await _mealStore.delete(meal.id);
                                   _loadData();
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('🗑️ "$mealName" deleted'),
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
+                                  }
                                 },
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
