@@ -1,0 +1,37 @@
+name: chef_grocer
+description: A Flutter grocery list app with offline-first local JSON storage
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  path_provider: ^2.1.1
+  intl: ^0.18.1
+  fl_chart: ^0.65.0
+  share_plus: ^7.2.1
+  pdf: ^3.10.7
+  flutter_native_splash: ^2.3.5
+  shared_preferences: ^2.2.2
+  smooth_page_indicator: ^1.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+
+flutter_native_splash:
+  color: "#4CAF50"
+  image: assets/logo.png
+  android: false
+  ios: true
+  web: false
